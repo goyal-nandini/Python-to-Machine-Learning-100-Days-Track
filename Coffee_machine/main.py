@@ -1,63 +1,35 @@
-from menu import MENU, resources
+from menu import Menu, MenuItem
+from coffee_maker import CoffeeMaker
+from money_machine import MoneyMachine
 
-# lets start 
-report_dict = resources.copy()
-report_dict["money"] = 0.0
-def process_report(drink):
-    '''for full report with money in machine'''
+# lets do this problem then we have to cover day17 also today only...as 19th day
+# hey make the object name good not this bad obj1 obj2 eww...
+# bugs hai so logical okay hai but program flow error hai -_- but mam wala ek dum same hai so its for yr understanding the correct flow!!
+# leaving as it is seems okay for now rest i am checking q&a
+menu = Menu()
+coffee_maker = CoffeeMaker()
+money_machine = MoneyMachine()
 
-    report_dict["water"] -= MENU[drink]["ingredients"]["water"]
-    if "milk" in MENU[drink]["ingredients"]:
-        report_dict["milk"] -= MENU[drink]["ingredients"]["milk"]
-    report_dict["coffee"] -= MENU[drink]["ingredients"]["coffee"]
-    report_dict["money"] += MENU[drink]["cost"]
+is_on = True
+while is_on:
+    
+    print("What would you like? ")
+    drink_options = menu.get_items()
+    choice = input(f"Enter your choice from {drink_options}: ").lower()
 
-def process_coins(drink):
-    '''process coins for drink as argument
-    and return change(if any)'''
-    print("Please insert money: ")
-    quarters = float(input("How many quarters: "))
-    dimes = float(input("How many dimes: "))
-    nickels = float(input("How many nickels: "))
-    pennies = float(input("How many pennies: "))
-    user_money = 0.25 * quarters + 0.10 * dimes + 0.05 * nickels + 0.01 * pennies
-    req_cost = MENU[drink]["cost"]
-    change = round(user_money - req_cost, 2)
-    if change >= 0:
-        process_report(drink)
-        print(f"Here is ${change} in change.")
-        print(f"Here is your {drink}. Enjoy!")
-        user_input()
-    else:
-        print(f"Sorry that's not enough money. Money Refunded.")
-        user_input()
-
-def check_availabilty_resources(drink):
-    '''have to check in drink actual req and compare it with report_dict to return 
-    the availability'''
-
-    for key, required in MENU[drink]["ingredients"].items():
-        if required > report_dict[key]:
-            print(f"{key} is not enough. hence, Drink is not Available.")
-            return False
-    return True
-            
-def user_input():
-    user_drink = input("What would you like?").lower()
-    if user_drink == "report":
-        # have to show up the current state of resources
-        print(f"Water: {report_dict['water']}ml")
-        print(f"Milk: {report_dict['milk']}ml")
-        print(f"Coffee: {report_dict['coffee']}g")
-        print(f"Money: ${report_dict['money']}")
-        user_input()
-    elif user_drink == "off":
-        return
-    elif user_drink in MENU:
-        if check_availabilty_resources(user_drink):
-            process_coins(user_drink)
-    else:
-        print("Invalid Entry")
-        user_input()
-
-user_input()
+    drink = menu.find_drink(choice) # vaise too ye find_drink() method hai object return krta hai lets see what happens!!
+    if drink: # "off" is being treated like a drink name before you check for "off". A BUG that's why it prints "Sorry that item is not available." when off
+        # checking availability
+        if coffee_maker.is_resource_sufficient(drink):
+            # process coins
+            if money_machine.make_payment(drink.cost):
+                # make coffee
+                coffee_maker.make_coffee(drink)
+    # 🚨Command keywords (off, report) must be handled BEFORE business logic (find_drink).
+    elif choice == "report": # A BUG that's why it prints "Sorry that item is not available." when report
+       coffee_maker.report()
+       money_machine.report()
+    elif choice == "off": # A BUG that's why it prints "Sorry that item is not available." when off
+        is_on = False
+    else: # no need i guess it already prints the item is not available (but anyways make it stay!!)
+        print("Invalid Choice")
