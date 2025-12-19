@@ -1,6 +1,4 @@
-'''requests is a third-party Python library, which we import as a module, and it 
-provides functions like get() that return Response objects.
-all doubts 🤔 👇'''
+import html
 import requests
 from question_model import Question
 from quiz_brain import QuizBrain
@@ -12,7 +10,8 @@ data = response.json()
 question_bank = []
 
 for q in data["results"]:
-    question = Question(q["question"], q["correct_answer"])
+    quest = html.unescape(q["question"]) 
+    question = Question(quest, q["correct_answer"])
     question_bank.append(question)
 
 
@@ -34,30 +33,4 @@ Python dictionary
 Question objects
    ↓
 QuizBrain
-
-👉⌚add info:
-requests → library (big)
-
-requests → module (what you import)
-
-Response → class inside it
-
-get() → function you call
-
-👉⌚que as doubt and ans:
-Q🤔: What does .json() do?
-
-It converts JSON response data into a Python dictionary.
-
-Q🤔: Difference between JSON and dictionary?
-
-JSON is a text-based data format, while a dictionary is a Python data structure.
-
-Q🤔: What is requests?
-
-requests is a Python module used to send HTTP requests.
-
-Q🤔: What is response?
-
-response is an object returned by requests.get() containing server response data.
 '''
